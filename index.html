@@ -1,73 +1,84 @@
-import tkinter as tk
-import random
-import math
-import threading
-import time
-from tkinter import messagebox
-
-class LoveApp:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("来自祝可的讯息")
-        self.root.geometry("400x300")
-        self.root.configure(bg='#fff5f7')
-        
-        self.label = tk.Label(self.root, text="做我女朋友好吗？✨", font=("Microsoft YaHei", 18), bg='#fff5f7', fg='#d63384')
-        self.label.pack(pady=50)
-
-        self.yes_btn = tk.Button(self.root, text="好呀", command=self.accept, width=10, bg='#ff4d7d', fg='white', font=("Microsoft YaHei", 12))
-        self.yes_btn.place(x=100, y=180)
-
-        self.no_btn = tk.Button(self.root, text="不要", command=self.move_no, width=10, bg='#bdc3c7', fg='white', font=("Microsoft YaHei", 12))
-        self.no_btn.place(x=220, y=180)
-        
-        self.no_scale = 1.0
-
-    def move_no(self):
-        # 按钮变小
-        self.no_scale -= 0.1
-        if self.no_scale <= 0.2:
-            self.no_btn.destroy() # 变太小就消失
-            return
-            
-        new_font_size = int(12 * self.no_scale)
-        self.no_btn.configure(font=("Microsoft YaHei", new_font_size))
-        
-        # 随机跳动
-        nx = random.randint(50, 300)
-        ny = random.randint(50, 250)
-        self.no_btn.place(x=nx, y=ny)
-
-    def accept(self):
-        self.root.withdraw() # 隐藏主窗口
-        self.show_hearts()
-
-    def show_hearts(self):
-        msgs = ["我爱你", "只喜欢你", "❤️", "祝可守护你", "余生请多指教"]
-        # 爱心方程点位
-        for i in range(80):
-            t = (2 * math.pi / 80) * i
-            x = 16 * math.sin(t) ** 3
-            y = 13 * math.cos(t) - 5 * math.cos(2*t) - 2 * math.cos(3*t) - math.cos(4*t)
-            
-            # 屏幕坐标适配
-            screen_x = x * 15 + 960 # 这里的960和440需根据对方屏幕调整
-            screen_y = -y * 15 + 440
-            
-            t_pop = threading.Thread(target=self.pop_window, args=(screen_x, screen_y, random.choice(msgs)))
-            t_pop.start()
-            time.sleep(0.1)
-        
-        # 最后弹出一个大的
-        messagebox.showinfo("祝可的真心", "太开心啦！❤️\n余生请多指教！\n—— 祝可")
-
-    def pop_window(self, x, y, text):
-        pop = tk.Toplevel()
-        pop.geometry(f"120x60+{int(x)}+{int(y)}")
-        pop.overrideredirect(True) # 去掉边框
-        tk.Label(pop, text=text, bg='#ff85a2', fg='white', font=("Microsoft YaHei", 10, "bold")).pack(expand=True, fill='both')
-        pop.attributes("-topmost", True)
-
-if __name__ == "__main__":
-    app = LoveApp()
-    app.root.mainloop()
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>给你的一封信</title>
+    <style>
+        body { background-color: #fff5f7; margin: 0; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: sans-serif; color: #d63384; }
+        h1 { font-size: 2em; margin-bottom: 60px; z-index: 5; text-align: center; padding: 0 20px; }
+        .btn-group { position: relative; width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; }
+        button { border: none; border-radius: 25px; padding: 12px 25px; font-size: 1.2em; cursor: pointer; transition: all 0.2s ease; position: absolute; }
+        #yesBtn { background-color: #ff4d7d; color: white; transform: translateX(-70px); z-index: 10; box-shadow: 0 4px 10px rgba(255,77,125,0.3); }
+        #noBtn { background-color: #bdc3c7; color: white; transform: translateX(70px); z-index: 9; }
+        .window { position: absolute; width: 90px; height: 55px; background: #fff; border: 1.5px solid #ff85a2; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; animation: pop 0.4s ease-out forwards; opacity: 0; z-index: 100; }
+        .title-bar { height: 12px; background: #ff85a2; display: flex; justify-content: flex-end; align-items: center; padding: 0 4px; }
+        .dot { width: 4px; height: 4px; background: white; border-radius: 50%; margin-left: 2px; }
+        .content { flex: 1; display: flex; justify-content: center; align-items: center; font-size: 10px; color: #d63384; font-weight: bold; text-align: center; }
+        @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        #final-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; border: 3px solid #ff4d7d; text-align: center; display: none; width: 75%; z-index: 1000; box-shadow: 0 0 50px rgba(255,77,125,0.4); }
+    </style>
+</head>
+<body>
+    <h1 id="question">做我女朋友好吗？✨</h1>
+    <div class="btn-group">
+        <button id="yesBtn">好呀</button>
+        <button id="noBtn">不要</button>
+    </div>
+    <div id="final-card">
+        <h2 style="margin: 0;">太开心啦！❤️</h2>
+        <p style="font-size: 1.1em; color: #555; line-height: 1.8;">我会一直对你好的，<br>余生请多指教。</p>
+        <p style="font-weight: bold; font-size: 1.3em;">—— 祝可</p>
+    </div>
+<script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const finalCard = document.getElementById('final-card');
+    const question = document.getElementById('question');
+    let noClickCount = 0;
+    let noScale = 1;
+    let noOpacity = 1;
+    noBtn.addEventListener('click', () => {
+        noClickCount++;
+        noScale -= 0.15;
+        noOpacity -= 0.15;
+        const x = Math.random() * (window.innerWidth - 100) - window.innerWidth/2 + 50;
+        const y = Math.random() * (window.innerHeight - 100) - window.innerHeight/2 + 50;
+        noBtn.style.transform = `translate(${x}px, ${y}px) scale(${noScale})`;
+        noBtn.style.opacity = noOpacity;
+        const texts = ["再考虑下？", "我会难过的", "不许点这个", "确定吗？", "点不到了吧"];
+        if (noClickCount <= texts.length) noBtn.innerText = texts[noClickCount - 1];
+        if (noClickCount >= 6) noBtn.style.display = 'none';
+    });
+    yesBtn.addEventListener('click', () => {
+        question.style.opacity = '0';
+        yesBtn.style.display = 'none';
+        noBtn.style.display = 'none';
+        const numWindows = 80;
+        const heartSize = window.innerWidth / 38;
+        const loveMsgs = ["我爱你", "只喜欢你", "永远在一起", "❤️", "守护你", "亲亲"];
+        function createHeartPoint(t) {
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+            return { x: x * heartSize, y: -y * heartSize - 50 };
+        }
+        function spawn(i) {
+            if (i >= numWindows) {
+                setTimeout(() => { finalCard.style.display = 'block'; }, 1000);
+                return;
+            }
+            const t = (Math.PI * 2 / numWindows) * i;
+            const pos = createHeartPoint(t);
+            const win = document.createElement('div');
+            win.className = 'window';
+            win.style.left = (window.innerWidth / 2 + pos.x - 45) + 'px';
+            win.style.top = (window.innerHeight / 2 + pos.y - 27) + 'px';
+            win.innerHTML = `<div class="title-bar"><div class="dot"></div><div class="dot"></div></div><div class="content">${loveMsgs[i % loveMsgs.length]}</div>`;
+            document.body.appendChild(win);
+            setTimeout(() => spawn(i + 1), 100);
+        }
+        spawn(0);
+    });
+</script>
+</body>
+</html>
