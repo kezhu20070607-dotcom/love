@@ -3,82 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>给你的专属惊喜</title>
+    <title>给最亲爱的姑婆</title>
     <style>
-        body { background-color: #fff5f7; margin: 0; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; justify-content: center; align-items: center; font-family: sans-serif; color: #d63384; position: relative; touch-action: manipulation; }
-        h1 { font-size: 1.8em; margin-bottom: 60px; z-index: 5; text-align: center; pointer-events: none; }
-        .btn-group { position: relative; width: 100%; height: 50px; display: flex; justify-content: center; align-items: center; }
-        button { border: none; border-radius: 25px; padding: 12px 25px; font-size: 1.2em; cursor: pointer; position: absolute; outline: none; -webkit-tap-highlight-color: transparent; }
-        #yesBtn { background-color: #ff4d7d; color: white; transform: translateX(-70px); z-index: 20; box-shadow: 0 4px 10px rgba(255,77,125,0.3); }
-        #noBtn { background-color: #bdc3c7; color: white; transform: translateX(70px); z-index: 19; transition: all 0.2s ease; }
-        .window { position: absolute; width: 90px; height: 55px; background: #fff; border: 1.5px solid #ff85a2; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; flex-direction: column; animation: pop 0.4s ease-out forwards; opacity: 0; z-index: 100; pointer-events: none; }
-        .title-bar { height: 12px; background: #ff85a2; display: flex; justify-content: flex-end; align-items: center; padding: 0 4px; }
-        .dot { width: 4px; height: 4px; background: white; border-radius: 50%; margin-left: 2px; }
-        .content { flex: 1; display: flex; justify-content: center; align-items: center; font-size: 10px; color: #d63384; font-weight: bold; text-align: center; }
+        body { background-color: #fff9f0; margin: 0; overflow: hidden; height: 100vh; width: 100vw; font-family: "Microsoft YaHei", sans-serif; }
+        /* 窗体样式：红底金边，更适合长辈 */
+        .window { position: absolute; width: 95px; height: 55px; background: #fff; border: 1.5px solid #d4af37; border-radius: 8px; box-shadow: 0 4px 10px rgba(184, 134, 11, 0.2); display: flex; flex-direction: column; animation: pop 0.4s ease-out forwards; opacity: 0; }
+        .title-bar { height: 14px; background: #c0392b; display: flex; justify-content: flex-end; align-items: center; padding: 0 5px; }
+        .dot { width: 5px; height: 5px; background: #f1c40f; border-radius: 50%; margin-left: 3px; }
+        .content { flex: 1; display: flex; justify-content: center; align-items: center; font-size: 11px; color: #c0392b; font-weight: bold; text-align: center; padding: 2px; }
         @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        #final-card { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; border: 3px solid #ff4d7d; text-align: center; display: none; width: 75%; z-index: 200; box-shadow: 0 0 50px rgba(255,77,125,0.4); }
+        /* 结尾的大卡片 */
+        #final-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100; background: white; padding: 25px; border-radius: 15px; border: 4px solid #c0392b; text-align: center; display: none; width: 75%; box-shadow: 0 0 40px rgba(192, 57, 43, 0.4); }
     </style>
 </head>
 <body>
-    <h1 id="question">做我女朋友好吗？✨</h1>
-    <div class="btn-group">
-        <button id="yesBtn">好呀</button>
-        <button id="noBtn">不要</button>
-    </div>
-    <div id="final-card">
-        <h2 style="margin: 0;">太开心啦！❤️</h2>
-        <p style="font-size: 1.1em; color: #555; line-height: 1.8;">我会一直对你好的，<br>余生请多指教。</p>
-        <p style="font-weight: bold; font-size: 1.5em;">—— 祝可</p>
-    </div>
+<div id="final-msg">
+    <h2 style="color: #c0392b;">亲爱的姑婆 ❤️</h2>
+    <p style="font-size: 16px; color: #333; line-height: 1.8;">
+        祝您：<br>
+        <b>福如东海，寿比南山！</b><br>
+        笑口常开，身体康健！
+    </p>
+</div>
+
 <script>
-    const yesBtn = document.getElementById('yesBtn');
-    const noBtn = document.getElementById('noBtn');
-    const finalCard = document.getElementById('final-card');
-    const question = document.getElementById('question');
-    let noClickCount = 0;
-    let noScale = 1;
+    const messages = [
+        "祝姑婆健康", "长命百岁", "笑口常开", "福星高照", "万事大吉", "天天开心",
+        "身体硬朗", "岁岁平安", "吉祥如意", "福气满满", "心想事成", "合家欢乐",
+        "喜气洋洋", "心情舒畅", "松鹤长春", "晚年幸福", "❤️爱您❤️", "送您真心"
+    ];
 
-    // 修复手机点击逻辑
-    noBtn.onclick = function() {
-        noClickCount++;
-        noScale -= 0.15;
-        const x = Math.random() * (window.innerWidth - 120) - window.innerWidth/2 + 60;
-        const y = Math.random() * (window.innerHeight - 200) - window.innerHeight/2 + 100;
-        noBtn.style.transform = `translate(${x}px, ${y}px) scale(${noScale})`;
-        const texts = ["再考虑下？", "我会难过的", "不许点这个", "确定吗？", "点不到了吧"];
-        if (noClickCount <= texts.length) noBtn.innerText = texts[noClickCount - 1];
-        if (noClickCount >= 6) noBtn.style.display = 'none';
-    };
+    const numWindows = 80;
+    const heartSize = window.innerWidth / 38;
 
-    yesBtn.onclick = function() {
-        question.style.display = 'none';
-        yesBtn.style.display = 'none';
-        noBtn.style.display = 'none';
-        const numWindows = 50;
-        const heartSize = window.innerWidth / 40;
-        const loveMsgs = ["我爱你", "只喜欢你", "永远在一起", "❤️", "比心", "嘿嘿"];
-        function createHeartPoint(t) {
-            const x = 16 * Math.pow(Math.sin(t), 3);
-            const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-            return { x: x * heartSize, y: -y * heartSize - 30 };
+    function createHeartPoint(t) {
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+        return { x: x * heartSize, y: -y * heartSize - 50 };
+    }
+
+    function spawn(i) {
+        if (i >= numWindows) {
+            setTimeout(() => { document.getElementById('final-msg').style.display = 'block'; }, 800);
+            return;
         }
-        function spawn(i) {
-            if (i >= numWindows) {
-                setTimeout(() => { finalCard.style.display = 'block'; }, 1000);
-                return;
-            }
-            const t = (Math.PI * 2 / numWindows) * i;
-            const pos = createHeartPoint(t);
-            const win = document.createElement('div');
-            win.className = 'window';
-            win.style.left = (window.innerWidth / 2 + pos.x - 45) + 'px';
-            win.style.top = (window.innerHeight / 2 + pos.y - 27) + 'px';
-            win.innerHTML = `<div class="title-bar"><div class="dot"></div><div class="dot"></div></div><div class="content">${loveMsgs[i % loveMsgs.length]}</div>`;
-            document.body.appendChild(win);
-            setTimeout(() => spawn(i + 1), 150);
-        }
-        spawn(0);
-    };
+        const t = (Math.PI * 2 / numWindows) * i;
+        const pos = createHeartPoint(t);
+        const win = document.createElement('div');
+        win.className = 'window';
+        win.style.left = (window.innerWidth / 2 + pos.x - 47) + 'px';
+        win.style.top = (window.innerHeight / 2 + pos.y - 27) + 'px';
+        win.innerHTML = `<div class="title-bar"><div class="dot"></div><div class="dot"></div></div><div class="content">${messages[i % messages.length]}</div>`;
+        document.body.appendChild(win);
+
+        // 慢速 500ms 弹出一个
+        setTimeout(() => spawn(i + 1), 500);
+    }
+
+    window.onload = () => setTimeout(() => spawn(0), 1000);
 </script>
 </body>
 </html>
